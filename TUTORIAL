@@ -1,0 +1,84 @@
+# TUTORIAL LENGKAP - Sukabumi TV Launcher V3 untuk Aqua LE43AQT6700UG
+# Dari 0 Sampai Jadi Launcher Default
+
+## SPEK TV TARGET
+- Model: Aqua LE43AQT6700UG (Android TV 11 / Google TV)
+- Chip: MTK 6683
+- RAM: 1.5GB - WAJIB anti-kill setting
+
+---
+
+### LANGKAH 1: AKTIFKAN DEVELOPER OPTIONS DI TV
+1. Remote > Settings (gear) > System > About
+2. Scroll ke Build > Klik OK 7x sampai muncul "You are now a developer"
+3. Kembali > System > Developer Options > Aktifkan:
+   - USB Debugging: ON
+   - Network Debugging / Wireless Debugging: ON (akan muncul IP: 192.168.0.xxx:5555)
+
+### LANGKAH 2: KONEK ADB DARI HP/LAPTOP (Seperti Screenshot)
+Di HP kamu (pakai Termux) atau Laptop:
+
+```bash
+# 1. Pastikan HP dan TV satu WiFi (misal Indihome Sukabumi)
+# 2. Cek IP TV di Settings > Network > IP Address, contoh 192.168.0.232
+
+adb connect 192.168.0.232:5555
+# Harus muncul: connected to 192.168.0.232:5555
+
+adb devices
+# Harus list TV
+
+# 3. Install APK yang sudah di-build
+adb install -r sukabumi-launcher-v3.apk
+
+# Jika gagal INSTALL_FAILED, coba:
+adb install --bypass-low-target-sdk-block sukabumi-launcher-v3.apk
+```
+
+### LANGKAH 3: SET SEBAGAI DEFAULT LAUNCHER (PENTING!)
+Aqua TV tidak bisa set default launcher langsung. Pakai Launcher Manager:
+
+1. Di TV, buka Chrome / Downloader, download:
+   https://github.com/techdoctoruk/launcher-manager/releases
+   File: launcher-manager-1.1.8.apk
+
+2. Install via ADB:
+   adb install launcher-manager-1.1.8.apk
+
+3. Buka Launcher Manager > Pilih "Sukabumi Launcher V3" > Set as Default > Klik HOME di remote.
+   Sekarang tiap tekan HOME akan masuk ke launcher kita.
+
+### LANGKAH 4: ANTI-KILL AGAR TIDAK DIMATIKAN SISTEM (WAJIB DI AQUA)
+1. Settings > Apps > See All Apps > Sukabumi Launcher V3
+2. Battery > Battery Optimization > Pilih "Unrestricted" / "Don't optimize"
+3. Settings > Apps > Special App Access > Display over other apps > Sukabumi Launcher > Allow
+
+### LANGKAH 5: SETUP ADZAN MEKKAH
+1. Download file adzan Mekkah MP3 berkualitas:
+   - https://www.islamic-audio.com atau
+   - https://mp3quran.net - cari "Mishary Rashid Alafasy Adhan"
+2. Rename jadi adzan.mp3
+3. Di project Android Studio: taruh di app/src/main/res/raw/adzan.mp3
+   (Buat folder raw jika belum ada)
+4. Build ulang APK. AdzanService akan pakai MediaPlayer.create(R.raw.adzan)
+
+Alternatif tanpa rebuild: Taruh di /sdcard/Music/adzan.mp3 dan ubah code di Services.kt pakai setDataSource.
+
+### LANGKAH 6: LIVE SCORE LIGA 1
+- Sudah auto: Liga 1 dari https://site.api.espn.com/apis/site/v2/sports/soccer/idn.1/scoreboard
+- Update tiap 60 detik di FootballCard()
+- Tambahan EPL support: eng.1 endpoint
+- Jika tidak muncul, cek Internet TV dan pastikan tidak diblokir DNS.
+
+### LANGKAH 7: TESTING
+- Tekan HOME: Harus masuk launcher kita dengan motivasi kiri, jadwal kanan
+- Tunggu jam 22:00 atau ubah jam TV untuk test Screensaver: Jadwal tengah horizontal, motivasi bawah tengah
+- Untuk test Adzan: Ubah waktu di PrayerTimeCalculator jadi 2 menit dari sekarang, lalu tunggu AdzanWorker (15 menit) atau jalankan manual via adb shell cmd jobscheduler run
+
+### TROUBLESHOOT AQUA KHUSUS
+- Jika launcher balik ke Google TV: Buka Launcher Manager lagi, re-set default
+- Jika adzan tidak bunyi: Cek volume media TV tidak 0, cek izin overlay
+- Jika motivasi tidak ganti: Cek WorkManager, adb shell dumpsys jobscheduler | grep sukabumi
+- Uninstall: adb uninstall com.sukabumi.tvlauncher
+
+Selesai! Launcher ringan <15MB, RAM usage ~80MB, cocok untuk Aqua 1.5GB.
