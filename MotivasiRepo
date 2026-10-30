@@ -1,0 +1,78 @@
+package com.sukabumi.tvlauncher
+
+import java.time.LocalTime
+import kotlin.random.Random
+
+data class Motivasi(
+    val text: String,
+    val source: String
+)
+
+object MotivasiRepo {
+    private val list = listOf(
+        Motivasi(
+            "Sesungguhnya bersama kesulitan ada kemudahan. Maka apabila engkau telah selesai dari sesuatu urusan, tetaplah bekerja keras untuk urusan yang lain.",
+            "QS. Al-Insyirah: 6-7"
+        ),
+        Motivasi(
+            "Dan barangsiapa bertakwa kepada Allah, niscaya Dia akan membukakan jalan keluar baginya dan memberinya rezeki dari arah yang tidak disangka-sangka.",
+            "QS. At-Talaq: 2-3"
+        ),
+        Motivasi(
+            "Janganlah kamu bersikap lemah, dan janganlah pula kamu bersedih hati, padahal kamulah orang-orang yang paling tinggi derajatnya, jika kamu orang-orang yang beriman.",
+            "QS. Ali Imran: 139"
+        ),
+        Motivasi(
+            "Allah tidak membebani seseorang melainkan sesuai dengan kesanggupannya.",
+            "QS. Al-Baqarah: 286"
+        ),
+        Motivasi(
+            "Barangsiapa yang memudahkan urusan orang lain, maka Allah akan memudahkan urusannya di dunia dan akhirat.",
+            "HR. Muslim"
+        ),
+        Motivasi(
+            "Sebaik-baik manusia adalah yang paling bermanfaat bagi manusia lain.",
+            "HR. Ahmad"
+        ),
+        Motivasi(
+            "Bersabarlah, karena sesungguhnya pertolongan Allah itu datang bersama kesabaran.",
+            "HR. Tirmidzi"
+        ),
+        Motivasi(
+            "Tidak ada balasan untuk kebaikan selain kebaikan pula.",
+            "QS. Ar-Rahman: 60"
+        ),
+        Motivasi(
+            "Ingatlah, hanya dengan mengingat Allah hati menjadi tenteram.",
+            "QS. Ar-Ra'd: 28"
+        ),
+        Motivasi(
+            "Maka nikmat Tuhanmu yang manakah yang kamu dustakan?",
+            "QS. Ar-Rahman: 13 - Pengingat Syukur"
+        ),
+        Motivasi(
+            "Dan bersabarlah kamu, sesungguhnya janji Allah itu benar.",
+            "QS. Ar-Rum: 60"
+        ),
+        Motivasi(
+            "Cukuplah Allah menjadi penolong kami dan Allah adalah sebaik-baik pelindung.",
+            "QS. Ali Imran: 173 - Hasbunallah"
+        )
+    )
+
+    fun getAll(): List<Motivasi> = list
+    fun getRandom(): Motivasi = list.random()
+
+    fun getByHour(hour: Int = LocalTime.now().hour): Motivasi {
+        val index = hour % list.size
+        return list[index]
+    }
+
+    fun getNextDifferent(current: Motivasi): Motivasi {
+        var next: Motivasi
+        do {
+            next = list[Random.nextInt(list.size)]
+        } while (next == current && list.size > 1)
+        return next
+    }
+}
